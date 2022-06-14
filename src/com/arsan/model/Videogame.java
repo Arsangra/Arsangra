@@ -4,11 +4,14 @@
  */
 package com.arsan.model;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  *
  * @author arsan
  */
 public class Videogame {
+    public static AtomicInteger count = new AtomicInteger(0);
     private int id;
     private String nombre;
     private Genero genero;
@@ -24,6 +27,7 @@ public class Videogame {
         this.genero = genero;
         this.valoracion = valoracion;
         this.jugado = jugado;
+        count.getAndIncrement();
     }
 
     public Videogame(String nombre, Genero genero, double valoracion, boolean jugado) {
@@ -31,11 +35,18 @@ public class Videogame {
         this.genero = genero;
         this.valoracion = valoracion;
         this.jugado = jugado;
+        count.getAndIncrement();
+        /*int n = 0;
+        int j = n++;//asignamos el valor y luego incrementamos; j=0, el valor es el dado en la variable, hasta que se pida un nuevo resultado de la variable
+        int c = ++n;//incrementamos y luego asignamos el valor; c=2, el valor obtenido tiene el incremento en la variable con el resultado final
+        n++;
+        ++n;*/
+        
     }
     //llamamos constructor anterior
-    public Videogame(String nombre, Genero genero, boolean jugado) {
+    /*public Videogame(String nombre, Genero genero, boolean jugado) {
         this(nombre, genero, 0.0, jugado);
-    }    
+    }*/
     //generamos getters and setters de las diferentes constantes
     public int getId() {
         return id;
