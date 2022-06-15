@@ -32,7 +32,7 @@ public class DbConnection {
 
     private Properties prop = new Properties();
     private Connection conn = null;
-    private Set<Videogame> setVideogames = new HashSet<>();
+    public Set<Videogame> setVideogames = new HashSet<>();
 
     public DbConnection() throws IOException, SQLException {
         //try con recursos, no evita colocar cath o finaly que no haría desarrollar mucho código
@@ -86,6 +86,7 @@ public class DbConnection {
         String sql = "SELECT * FROM VIDEOGAMES";
         try ( Statement st = conn.createStatement()) {
             ResultSet rs = st.executeQuery(sql);
+            setVideogames.clear();
             while (rs.next()) {
                 setVideogames.add(new Videogame(rs.getInt(1), rs.getString(2), Genero.valueOf(rs.getString(3)), rs.getDouble(4), rs.getBoolean(5)));
             }
@@ -95,7 +96,7 @@ public class DbConnection {
 
     }
 
-    public Videogame findVideogameById(int id) throws SQLException {
+    public Videogame findVideogame(int id) throws SQLException {
         String sql = "SELECT * FROM Videogames WHERE ID = ?";
         try ( PreparedStatement stm = conn.prepareStatement(sql);) {
             stm.setInt(1, id);
@@ -109,7 +110,7 @@ public class DbConnection {
         return null;
     }
 
-    public Videogame findVideogameById(String name) throws SQLException {
+    public Videogame findVideogame(String name) throws SQLException {
         String sql = "SELECT * FROM Videogames WHERE titulo = ?";
         try ( PreparedStatement stm = conn.prepareStatement(sql);) {
             stm.setString(1, name.trim());
@@ -136,6 +137,7 @@ public class DbConnection {
                 stm.setInt(5, id);
                 stm.execute();
             }
+            setVideogames = readAllVideogames();
         } else {
             mensaje = isSet ? "Debe introducir un nombre de registro válido" : "No hay ningún registro con el id especificado";
 
@@ -151,8 +153,9 @@ public class DbConnection {
             try ( PreparedStatement stm = conn.prepareStatement(sql);) {
                 stm.setInt(1, id);
                 stm.execute();
+                setVideogames = readAllVideogames();
                 return true;
-            }
+            }            
         }
         return false;
     }

@@ -9,8 +9,12 @@ import com.arsan.model.Genero;
 import java.awt.Color;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import javax.swing.DefaultListModel;
 
 /**
  *
@@ -31,10 +35,10 @@ public class ManagerWindow extends javax.swing.JFrame {
             Logger.getLogger(ManagerWindow.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(ManagerWindow.class.getName()).log(Level.SEVERE, null, ex);
-        } 
+        }
         for (Genero value : Genero.values()) {
             generoComboBox.addItem(value.name());
-            
+
         }
     }
 
@@ -55,18 +59,20 @@ public class ManagerWindow extends javax.swing.JFrame {
         valoracionComboBox = new javax.swing.JComboBox<>();
         jugadoCheckBox = new javax.swing.JCheckBox();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        listaVideojuegos = new javax.swing.JList<>();
+        crearBoton = new javax.swing.JButton();
+        listarBoton = new javax.swing.JButton();
+        editarBoton = new javax.swing.JButton();
+        eliminarBoton = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTextPane2 = new javax.swing.JTextPane();
+        idField = new javax.swing.JTextPane();
         statusLabel = new javax.swing.JLabel();
         jButton5 = new javax.swing.JButton();
         jComboBox3 = new javax.swing.JComboBox<>();
         tituloField = new javax.swing.JTextField();
+        numeroElementosCB = new javax.swing.JComboBox<>();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -85,40 +91,49 @@ public class ManagerWindow extends javax.swing.JFrame {
             }
         });
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane2.setViewportView(jList1);
+        jScrollPane2.setViewportView(listaVideojuegos);
 
-        jButton1.setText("CREAR");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        crearBoton.setText("CREAR");
+        crearBoton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                crearBotonActionPerformed(evt);
             }
         });
 
-        jButton2.setText("LISTAR");
-
-        jButton3.setText("EDITAR");
-
-        jButton4.setText("ELIMINAR");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        listarBoton.setText("LISTAR");
+        listarBoton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                listarBotonActionPerformed(evt);
+            }
+        });
+
+        editarBoton.setText("EDITAR");
+        editarBoton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editarBotonActionPerformed(evt);
+            }
+        });
+
+        eliminarBoton.setText("ELIMINAR");
+        eliminarBoton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                eliminarBotonActionPerformed(evt);
             }
         });
 
         jLabel5.setText("ID");
 
-        jScrollPane3.setViewportView(jTextPane2);
+        jScrollPane3.setViewportView(idField);
 
         statusLabel.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
 
         jButton5.setText("BUSCAR");
 
         jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "TÍTULO" }));
+
+        numeroElementosCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50" }));
+
+        jLabel6.setText("Nº:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -132,9 +147,9 @@ public class ManagerWindow extends javax.swing.JFrame {
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jButton1)
+                                        .addComponent(crearBoton)
                                         .addGap(18, 18, 18)
-                                        .addComponent(jButton2))
+                                        .addComponent(listarBoton))
                                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                         .addComponent(tituloField, javax.swing.GroupLayout.Alignment.LEADING)
                                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -142,26 +157,29 @@ public class ManagerWindow extends javax.swing.JFrame {
                                             .addGap(4, 4, 4)
                                             .addComponent(valoracionComboBox, 0, 52, Short.MAX_VALUE))
                                         .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 71, Short.MAX_VALUE)
-                                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                        .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 125, Short.MAX_VALUE)
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(generoComboBox, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addComponent(jugadoCheckBox, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                .addGap(117, 117, 117)
-                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 316, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(numeroElementosCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(73, 73, 73)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(statusLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 590, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addComponent(jButton5)
                                 .addGap(18, 18, 18)
                                 .addComponent(jComboBox3, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                    .addComponent(editarBoton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(eliminarBoton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(25, 25, 25)
                                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(1, 1, 1)
@@ -175,37 +193,37 @@ public class ManagerWindow extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(324, 324, 324)
-                        .addComponent(jButton4))
-                    .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(53, 53, 53)
+                        .addComponent(eliminarBoton))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(tituloField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(17, 17, 17)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3)
+                        .addGap(18, 18, 18)
+                        .addComponent(generoComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(26, 26, 26)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(valoracionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jugadoCheckBox)
+                        .addGap(9, 9, 9)
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(crearBoton)
+                            .addComponent(listarBoton)
+                            .addComponent(numeroElementosCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(editarBoton)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(tituloField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(17, 17, 17)
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel3)
-                                .addGap(18, 18, 18)
-                                .addComponent(generoComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(26, 26, 26)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel4)
-                                    .addComponent(valoracionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(18, 18, 18)
-                                .addComponent(jugadoCheckBox)
-                                .addGap(30, 30, 30)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jButton1)
-                                    .addComponent(jButton2)))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addComponent(jButton3))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(40, 40, 40)
+                                .addGap(35, 35, 35)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(jScrollPane3)
                                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
@@ -222,37 +240,85 @@ public class ManagerWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jugadoCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jugadoCheckBoxActionPerformed
-        
+
+
+    }//GEN-LAST:event_jugadoCheckBoxActionPerformed
+
+    private void eliminarBotonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarBotonActionPerformed
+        try {
+            if (dbconn.deleteVideogame(Integer.parseInt(idField.getText()))) {
+                
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_eliminarBotonActionPerformed
+
+    private void crearBotonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_crearBotonActionPerformed
+
         try {
             String titulo = tituloField.getText().trim();
-            if (!titulo.isBlank()) {                
+            if (!titulo.isBlank()) {
                 if (dbconn.createVideogame(titulo, Genero.valueOf(generoComboBox.getSelectedItem().toString().toUpperCase()), Double.parseDouble(valoracionComboBox.getSelectedItem().toString()), jugadoCheckBox.isSelected())) {
-                    statusLabel.setForeground(Color.green);
-                    statusLabel.setText("Insertado con éxito");
+                    editarEstado(Color.green, "Insertado con éxito");
+
                 } else {
-                    statusLabel.setForeground(Color.red);
-                    statusLabel.setText("No se ha podido insertar");
+                    editarEstado(Color.red, "No se ha podido insertar");
+
                 }
-            }
-            else {
-                statusLabel.setForeground(Color.red);
-                statusLabel.setText("No se ha podido insertar");
+            } else {
+                editarEstado(Color.red, "No se ha podido insertar");
             }
             // Insertando datos a la db
         } catch (SQLException ex) {
             Logger.getLogger(ManagerWindow.class.getName()).log(Level.SEVERE, "Ha habido un problema", ex);
         }
+    }//GEN-LAST:event_crearBotonActionPerformed
 
+    private void listarBotonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listarBotonActionPerformed
+        //String[] infoArray = new String[dbconn.setVideogames.size()];
+        DefaultListModel model = new DefaultListModel();
+        int numEle = Integer.parseInt(numeroElementosCB.getSelectedItem().toString());
+        //try {
+        dbconn.setVideogames
+                .stream()
+                .sorted((a, b) -> a.getId() - b.getId())
+                .limit(numEle)
+                //.map(v -> v.toString())//Nos devuelve un string con el cambio que le hagamos
+                .forEach(v -> model.add(v.getId() - 1, v.toString()));
+//.collect(Collectors.toList())//Convertimos a lista
+        //.toArray(infoArray);//De lista lo pasamos a array 
+        listaVideojuegos.setModel(model);
+        /*} catch (SQLException ex) {
+            Logger.getLogger(ManagerWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+        //listaVideojuegos.setListData(infoArray);
+    }//GEN-LAST:event_listarBotonActionPerformed
 
-    }//GEN-LAST:event_jugadoCheckBoxActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void editarBotonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarBotonActionPerformed
+        try {
+            String mensaje = dbconn.updateVideogame(
+                    Integer.parseInt(idField.getText()),
+                    tituloField.getText(),
+                    Genero.valueOf(generoComboBox.getSelectedItem().toString()),
+                    Double.parseDouble(valoracionComboBox.getSelectedItem().toString()),
+                    jugadoCheckBox.isSelected()
+            );
+            if (mensaje.equals("Registro modificado con éxito")) {
+                editarEstado(Color.green, mensaje);
+            } else {
+                editarEstado(Color.red, mensaje);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NumberFormatException e) {
+            editarEstado(Color.RED, "Debe introducir un ID válido del video juego que quiere editar.");
+        }
+    }//GEN-LAST:event_editarBotonActionPerformed
+    private void editarEstado(Color color, String texto) {
+        statusLabel.setForeground(color);
+        statusLabel.setText(texto);
+    }
 
     /**
      * @param args the command line arguments
@@ -291,11 +357,11 @@ public class ManagerWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton crearBoton;
+    private javax.swing.JButton editarBoton;
+    private javax.swing.JButton eliminarBoton;
     private javax.swing.JComboBox<String> generoComboBox;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JTextPane idField;
     private javax.swing.JButton jButton5;
     private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JLabel jLabel1;
@@ -303,11 +369,13 @@ public class ManagerWindow extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JList<String> jList1;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextPane jTextPane2;
     private javax.swing.JCheckBox jugadoCheckBox;
+    private javax.swing.JList<String> listaVideojuegos;
+    private javax.swing.JButton listarBoton;
+    private javax.swing.JComboBox<String> numeroElementosCB;
     private javax.swing.JLabel statusLabel;
     private javax.swing.JTextField tituloField;
     private javax.swing.JComboBox<String> valoracionComboBox;
