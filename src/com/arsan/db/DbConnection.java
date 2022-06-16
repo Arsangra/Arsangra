@@ -107,7 +107,7 @@ public class DbConnection {
             }
 
         }
-        return null;
+        return new Videogame();
     }
 
     public Videogame findVideogame(String name) throws SQLException {
@@ -121,7 +121,7 @@ public class DbConnection {
             }
 
         }
-        return null;
+        return new Videogame();
     }
 
     public String updateVideogame(int id, String titulo, Genero genero, double valoracion, boolean jugado) throws SQLException {

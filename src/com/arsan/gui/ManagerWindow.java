@@ -6,6 +6,7 @@ package com.arsan.gui;
 
 import com.arsan.db.DbConnection;
 import com.arsan.model.Genero;
+import com.arsan.model.Videogame;
 import java.awt.Color;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -68,8 +69,8 @@ public class ManagerWindow extends javax.swing.JFrame {
         jScrollPane3 = new javax.swing.JScrollPane();
         idField = new javax.swing.JTextPane();
         statusLabel = new javax.swing.JLabel();
-        jButton5 = new javax.swing.JButton();
-        jComboBox3 = new javax.swing.JComboBox<>();
+        buscarBoton = new javax.swing.JButton();
+        opcionCB = new javax.swing.JComboBox<>();
         tituloField = new javax.swing.JTextField();
         numeroElementosCB = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
@@ -127,9 +128,14 @@ public class ManagerWindow extends javax.swing.JFrame {
 
         statusLabel.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
 
-        jButton5.setText("BUSCAR");
+        buscarBoton.setText("BUSCAR");
+        buscarBoton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buscarBotonActionPerformed(evt);
+            }
+        });
 
-        jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "TÍTULO" }));
+        opcionCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ID", "TÍTULO" }));
 
         numeroElementosCB.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50" }));
 
@@ -172,9 +178,9 @@ public class ManagerWindow extends javax.swing.JFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jButton5)
+                                .addComponent(buscarBoton)
                                 .addGap(18, 18, 18)
-                                .addComponent(jComboBox3, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(opcionCB, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -229,8 +235,8 @@ public class ManagerWindow extends javax.swing.JFrame {
                                     .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton5)
-                    .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(buscarBoton)
+                    .addComponent(opcionCB, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(statusLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(63, 63, 63))
@@ -247,10 +253,14 @@ public class ManagerWindow extends javax.swing.JFrame {
     private void eliminarBotonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_eliminarBotonActionPerformed
         try {
             if (dbconn.deleteVideogame(Integer.parseInt(idField.getText()))) {
-                
+                editarEstado(Color.green, "Eliminado con éxito");
+            } else {
+                editarEstado(Color.red, "No se ha podido eliminar");
             }
         } catch (SQLException ex) {
             Logger.getLogger(ManagerWindow.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NumberFormatException e) {
+            editarEstado(Color.RED, "Debe introducir un ID válido del video juego que quiere eliminar.");
         }
     }//GEN-LAST:event_eliminarBotonActionPerformed
 
@@ -279,19 +289,24 @@ public class ManagerWindow extends javax.swing.JFrame {
         //String[] infoArray = new String[dbconn.setVideogames.size()];
         DefaultListModel model = new DefaultListModel();
         int numEle = Integer.parseInt(numeroElementosCB.getSelectedItem().toString());
-        //try {
-        dbconn.setVideogames
-                .stream()
-                .sorted((a, b) -> a.getId() - b.getId())
-                .limit(numEle)
-                //.map(v -> v.toString())//Nos devuelve un string con el cambio que le hagamos
-                .forEach(v -> model.add(v.getId() - 1, v.toString()));
+
+        try {
+            dbconn.readAllVideogames()
+                    .stream()
+                    .sorted((a, b) -> b.getId() - a.getId())
+                    .limit(numEle)
+                    //.map(v -> v.toString())//Nos devuelve un string con el cambio que le hagamos
+                    .forEach(v -> {
+                        int index = 0;
+                        model.add(index++, v.toString());
+                    });
+        } catch (SQLException ex) {
+            Logger.getLogger(ManagerWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
 //.collect(Collectors.toList())//Convertimos a lista
         //.toArray(infoArray);//De lista lo pasamos a array 
         listaVideojuegos.setModel(model);
-        /*} catch (SQLException ex) {
-            Logger.getLogger(ManagerWindow.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+
         //listaVideojuegos.setListData(infoArray);
     }//GEN-LAST:event_listarBotonActionPerformed
 
@@ -315,6 +330,39 @@ public class ManagerWindow extends javax.swing.JFrame {
             editarEstado(Color.RED, "Debe introducir un ID válido del video juego que quiere editar.");
         }
     }//GEN-LAST:event_editarBotonActionPerformed
+
+    private void buscarBotonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarBotonActionPerformed
+        Videogame v1 = new Videogame();
+        switch (opcionCB.getSelectedItem().toString()) {
+            case "ID": {
+                try {
+                    v1 = dbconn.findVideogame(Integer.parseInt(idField.getText()));
+                } catch (SQLException ex) {
+                    Logger.getLogger(ManagerWindow.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (NumberFormatException e) {
+                    editarEstado(Color.RED, "Debe introducir un ID válido del video juego que quiere buscar.");
+                }
+            }
+            break;
+            case "TÍTULO":
+                if (!tituloField.getText().isBlank()) {
+                    try {
+                        v1 = dbconn.findVideogame(tituloField.getText());
+                    } catch (SQLException ex) {
+                        Logger.getLogger(ManagerWindow.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }else{
+                    editarEstado(Color.red, "Debe introducir un nombre válido del video juego que quiere buscar.");
+                }
+                break;
+        }
+        editarEstado(Color.green, "Su búsqueda se ha realizado con éxito");
+        DefaultListModel model = new DefaultListModel<>();
+        String texto = (v1.getId()==0)?"No se ha encontrado ninguna coincidencia":v1.toString();
+        model.add(0, texto);
+        listaVideojuegos.setModel(model);
+        
+    }//GEN-LAST:event_buscarBotonActionPerformed
     private void editarEstado(Color color, String texto) {
         statusLabel.setForeground(color);
         statusLabel.setText(texto);
@@ -357,13 +405,12 @@ public class ManagerWindow extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buscarBoton;
     private javax.swing.JButton crearBoton;
     private javax.swing.JButton editarBoton;
     private javax.swing.JButton eliminarBoton;
     private javax.swing.JComboBox<String> generoComboBox;
     private javax.swing.JTextPane idField;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -376,6 +423,7 @@ public class ManagerWindow extends javax.swing.JFrame {
     private javax.swing.JList<String> listaVideojuegos;
     private javax.swing.JButton listarBoton;
     private javax.swing.JComboBox<String> numeroElementosCB;
+    private javax.swing.JComboBox<String> opcionCB;
     private javax.swing.JLabel statusLabel;
     private javax.swing.JTextField tituloField;
     private javax.swing.JComboBox<String> valoracionComboBox;
